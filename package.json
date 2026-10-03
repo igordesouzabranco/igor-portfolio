@@ -4,7 +4,7 @@
   "description": "Portfólio interativo de Igor de Souza Branco que roda no terminal",
   "main": "index.js",
   "bin": {
-    "igor-portfolio": "./index.js"
+    "igor-portfolio": "index.js"
   },
   "repository": {
   "type": "git",
