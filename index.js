@@ -68,23 +68,47 @@ function mostrarMenu() {
   desenhar(arte ? juntar(arte.map(colorirCobra), dir, 4) : dir);
 }
 
-function esperarEnter() {
-  rl.question(E.margem() + cinza("[Enter] voltar ao menu "), () => perguntar());
+let sessaoAtual = null; // null = menu principal
+
+function linhaRodape() {
+  return L(["← → ", claro], ["trocar a cor da interface", cinza]);
 }
 
-function perguntar() {
-  mostrarMenu();
-  rl.question(E.margem() + verde("visitante@igor:~$ "), (opcao) => {
-    const escolha = opcao.trim();
-    if (escolha === "0") return rl.close();
-    if (sessions[escolha]) {
-      sessions[escolha].mostrar();
-      esperarEnter();
-    } else {
-      perguntar();
-    }
-  });
+function mostrarPrompt() {
+  rl.setPrompt(
+    sessaoAtual
+      ? E.margem() + cinza("[Enter] voltar ao menu ")
+      : E.margem() + verde("visitante@igor:~$ ")
+  );
+  rl.prompt(true);
+  E.rodape(linhaRodape());
 }
+
+// Redesenha a tela atual e reescreve o prompt por cima
+function atualizar() {
+  if (sessaoAtual) sessaoAtual.mostrar();
+  else mostrarMenu();
+  mostrarPrompt();
+}
+
+// Setas ← → alternam a cor da interface
+rl.input.on("keypress", (_str, key) => {
+  if (key && !key.ctrl && !key.meta && (key.name === "left" || key.name === "right")) {
+    E.alternarCor(key.name === "right" ? 1 : -1);
+    atualizar();
+    return;
+  }
+  // o readline redesenhou a linha do prompt e apagou o rodapé; recoloca
+  E.rodape(linhaRodape());
+});
+
+rl.on("line", (entrada) => {
+  const escolha = entrada.trim();
+  if (sessaoAtual) sessaoAtual = null;
+  else if (escolha === "0") return rl.close();
+  else if (sessions[escolha]) sessaoAtual = sessions[escolha];
+  atualizar();
+});
 
 E.iniciarTela();
-perguntar();
+atualizar();

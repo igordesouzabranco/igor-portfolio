@@ -1,6 +1,6 @@
 {
   "name": "igor-portfolio",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Portfólio interativo de Igor de Souza Branco que roda no terminal",
   "main": "index.js",
   "bin": {
